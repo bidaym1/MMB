@@ -1,0 +1,40 @@
+
+OFILES = cell.o conrec.o crash.o dish.o graph.h.gch hull.o info.o misc.o output.o parameter.o parse.o pde.o random.o sqr.o sticky.o warning.o
+all: $(OFILES)
+	clang++ -std=c++11 -shared -undefined dynamic_lookup `python -m pybind11 --includes` binding.cpp ${OFILES} -o module.so `python3-config --ldflags`
+ca.o: ca.h ca.cpp graph.h.gch pde.o cell.o
+	clang++ -c ca.h ca.cpp graph.h.gch pde.o cell.o
+cell.o: cell.h cell.cpp parameter.o
+	clang++ -c cell.h cell.cpp parameter.o
+conrec.o: conrec.h conrec.cpp
+	clang++ -c conrec.h conrec.cpp
+crash.o: crash.h crash.cpp
+	clang++ -c crash.h crash.cpp
+dish.o: dish.h dish.cpp graph.h.gch random.o pde.o cell.o ca.o
+	clang++ -c dish.h dish.cpp graph.h.gch random.o pde.o cell.o ca.o
+graph.h.gch: graph.h
+	clang++ -c graph.h
+hull.o: hull.h hull.cpp
+	clang++ -c hull.h hull.cpp
+info.o: info.h info.cpp misc.h
+	clang++ -c info.h info.cpp misc.h
+mainpage.o: mainpage.h mainpage.cpp
+	clang++ -c mainpage.h mainpage.cpp
+#misc.o: misc.h misc.cpp
+#	clang++ -c misc.h misc.cpp
+output.o: output.h output.cpp
+	clang++ -c output.h output.cpp
+parameter.o: parameter.h parameter.cpp
+	clang++ -c parameter.h parameter.cpp
+parse.o: parse.h parse.cpp
+	clang++ -c parse.h parse.cpp
+pde.o: pde.h pde.cpp graph.h.gch
+	clang++ -c pde.h pde.cpp graph.h.gch
+random.o: random.h random.cpp
+	clang++ -c random.h random.cpp
+sqr.o: sqr.h sqr.cpp
+	clang++ -c sqr.h sqr.cpp
+sticky.o: sticky.h sticky.cpp
+	clang++ -c sticky.h sticky.cpp
+warning.o: warning.h warning.cpp
+	clang++ -c warning.h warning.cppca.h
