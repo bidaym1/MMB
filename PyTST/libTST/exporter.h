@@ -54,7 +54,7 @@ public:
     }
     cbPDESigma getPDE(int layer);
     void computeDrawing(pybind11::array_t<int> drawing, int border_color);
-    //pybind11::array_t<int> computeDrawing(pybind11::array_t<int> drawing, int border_color);
+    // pybind11::array_t<int> computeDrawing(pybind11::array_t<int> drawing, int border_color);
 };
 
 Exporter::Exporter(const std::string& filename)
@@ -101,60 +101,91 @@ void Exporter::setCallback(Callback* callback)
     dish->CPM->setCallback(callback);
 }
 
-//pybind11::array_t<int> Exporter::computeDrawing(pybind11::array_t<int> drawing, int border_color)
+void setValue(int i, int j, int k, int value, int* data, int shape1, int shape2)
+{
+    // used in computeDrawing
+    int index = i * shape2 * shape1 + shape2 * j + k;
+    data[index] = value;
+}
+
+// pybind11::array_t<int> Exporter::computeDrawing(pybind11::array_t<int> drawing, int border_color)
 void Exporter::computeDrawing(pybind11::array_t<int> drawing, int border_color)
 {
     pybind11::buffer_info drawing_info = drawing.request();
-    auto drawing_ptr = static_cast<int*>(drawing_info.ptr);
+    int* drawing_ptr = static_cast<int*>(drawing_info.ptr);
 
-    cout << "shape = ";
+    //    cout << "shape = ";
     for (auto shape : drawing_info.shape)
         cout << shape << ',';
     cout << endl;
+    //    cout << par.sizex << ',' << par.sizey << endl;
+    //
+    //    for (int i =0; i<10*10*3; i++)
+    //        cout << i << ',' << drawing_ptr[i] << endl;
+    //
 
-    for (int i = 0; i < par.sizex; i++) {
-        for (int j = 0; j < par.sizey; j++) {
+    // for (int i = 0; i < drawing_info.shape[0]; i++) {
+    //     for (int j = 0; j < drawing_info.shape[1]; j++) {
+    for (int i = 1; i < par.sizex - 1; i++) {
+        for (int j = 1; j < par.sizey - 1; j++) {
+
             int spin = getSigmaAt(i, j);
-            int type = dish->CPM->getCell(spin).getTau();
+            int type = dish->CPM->getCell(spin).getTau() + 1;
+
             int R = colortable[type][0];
             int G = colortable[type][1];
             int B = colortable[type][2];
 
-            cout << i << ' ' << j << " R: " << drawing_ptr[i * drawing_info.shape[1]*drawing_info.shape[0] + j * drawing_info.shape[0]] << endl;
-            cout << i << ' ' << j << " G: " << drawing_ptr[i * drawing_info.shape[1]*drawing_info.shape[0] + j * drawing_info.shape[0]+1] << endl;
-            cout << i << ' ' << j << " B: " << drawing_ptr[i * drawing_info.shape[1]*drawing_info.shape[0] + j * drawing_info.shape[0]+2] << endl;
+            int R_border = colortable[border_color][0];
+            int G_border = colortable[border_color][1];
+            int B_border = colortable[border_color][2];
 
-            drawing_ptr[i * drawing_info.shape[1]*drawing_info.shape[0] + j * drawing_info.shape[0]] = R;
-            drawing_ptr[i * drawing_info.shape[1]*drawing_info.shape[0] + j * drawing_info.shape[0] + 1] = G;
-            drawing_ptr[i * drawing_info.shape[1]*drawing_info.shape[0] + j * drawing_info.shape[0] + 2] = B;
+            //            int R_index = i * drawing_info.shape[2]*drawing_info.shape[1] + j * drawing_info.shape[2] ;
+            //            int G_index = R_index + 1;
+            //            int B_index = R_index + 2;
+            //
+            //            drawing_ptr[R_index] = R;
+            //            drawing_ptr[G_index] = G;
+            //            drawing_ptr[B_index] = B;
 
+            setValue(2 * i, 2 * j, 0, R, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            setValue(2 * i, 2 * j, 1, G, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            setValue(2 * i, 2 * j, 2, B, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+
+            if (spin == getSigmaAt(i + 1, j)) {
+                setValue(2 * i + 1, 2 * j, 0, R, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i + 1, 2 * j, 1, G, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i + 1, 2 * j, 2, B, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            } else {
+                setValue(2 * i + 1, 2 * j, 0, R_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i + 1, 2 * j, 1, G_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i + 1, 2 * j, 2, B_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            }
+
+            if (spin == getSigmaAt(i, j + 1)) {
+                setValue(2 * i, 2 * j + 1, 0, R, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i, 2 * j + 1, 1, G, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i, 2 * j + 1, 2, B, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            } else {
+                setValue(2 * i, 2 * j + 1, 0, R_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i, 2 * j + 1, 1, G_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i, 2 * j + 1, 2, B_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            }
+
+            if (spin == getSigmaAt(i + 1, j + 1)) {
+                setValue(2 * i + 1, 2 * j + 1, 0, R, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i + 1, 2 * j + 1, 1, G, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i + 1, 2 * j + 1, 2, B, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            } else {
+                setValue(2 * i + 1, 2 * j + 1, 0, R_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i + 1, 2 * j + 1, 1, G_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+                setValue(2 * i + 1, 2 * j + 1, 2, B_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            }
+            //            if (spin > 0){
+            //            cout << i << ' ' << j << " R: " << drawing_ptr[R_index] << ',' << spin << ',' << type << ':' << R << endl;
+            //            cout << i << ' ' << j << " G: " << drawing_ptr[G_index] << ',' << spin << ',' << type << ':'<< G << endl;
+            //            cout << i << ' ' << j << " B: " << drawing_ptr[B_index] << ',' << spin << ',' << type << ':'<< B << endl;
+            //            }
         }
     }
-    //return drawing;
 }
-
-//            if (spin > 0) {
-//                int R = colortable[border_color][0];
-//                int G = colortable[border_color][1];
-//                int B = colortable[border_color][2];
-//                if (i + 1 < par.sizey) {
-//                    int next_spin = getSigmaAt(i + 1, j);
-//                    if (spin != next_spin) {
-//                        drawing_ptr[(i + 1) * drawing_info.shape[0] + j * drawing_info.shape[1]] = R;
-//                        drawing_ptr[(i + 1) * drawing_info.shape[0] + j * drawing_info.shape[1] + 1] = G;
-//                        drawing_ptr[(i + 1) * drawing_info.shape[0] + j * drawing_info.shape[1] + 2] = B;
-//
-//                    }
-//                }
-//                if (j + 1 < par.sizex) {
-//                    int next_spin = getSigmaAt(i, j+1);
-//                    if (spin != next_spin) {
-//                        drawing_ptr[i * drawing_info.shape[0] + (j+1) * drawing_info.shape[1]] = R;
-//                        drawing_ptr[i * drawing_info.shape[0] + (j+1) * drawing_info.shape[1] + 1] = G;
-//                        drawing_ptr[i * drawing_info.shape[0] + (j+1) * drawing_info.shape[1] + 2] = B;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
