@@ -1,4 +1,7 @@
 import module
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 
 class Callback_PyTST:
@@ -23,7 +26,7 @@ class Callback_PyTST:
         return self.copy_prob(ext_DH, stiffness)
 
     def timestep(self, sigma):
-        print(f"MCS {self._time}")
+        #print(f"MCS {self._time}")
         self._time+=1
 
     def copy_prob(DH, stiffness):
@@ -41,6 +44,20 @@ class Interface:
         # Give pointer of Callback (from callbacks.h) back to exporter
         self.exporter.setCallback(self.callback_pytst.callback)
         self.exporter.dishInit()
+        
+        sizex = None
+        sizey = None
+        with open(parfile, 'r') as file:
+            for line in file:
+                if 'sizex' in line:
+                    sizex = int(line.split(' = ')[1])
+
+                if 'sizey' in line:
+                    sizey = int(line.split(' = ')[1])
+        if not sizex or not sizey:
+            raise RuntimeError("Did not find sizes in the parameterfile!")
+
+        self._drawing = np.zeros((2*sizex,2*sizey, 3)).astype(np.intc)
 
     def TimeStep(self, count=1):
         for _ in range(count):
@@ -56,3 +73,23 @@ class Interface:
     def set_spin_tocell(self, nx, ny):
         self.exporter.addspin(nx,ny, 1)
 
+    def draw(self, ax):
+        self.exporter.computeDrawing(self._drawing,1)
+        ax.imshow(self._drawing)
+
+
+    def runAndAnimate(self, runtime, draw_stride):
+
+        fig, ax = plt.subplots() 
+
+        def init():
+            pass
+        def update(frame):
+            self.TimeStep(draw_stride)
+            self.draw(ax)
+            print(f"Drawing frame %s" % (draw_stride*frame))
+
+        ani = FuncAnimation(fig, update, 
+                            frames=np.array(range( runtime // draw_stride)),
+                            init_func=init,blit=False)     
+        return ani

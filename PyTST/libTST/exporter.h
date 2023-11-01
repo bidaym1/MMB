@@ -115,9 +115,9 @@ void Exporter::computeDrawing(pybind11::array_t<int> drawing, int border_color)
     int* drawing_ptr = static_cast<int*>(drawing_info.ptr);
 
     //    cout << "shape = ";
-    for (auto shape : drawing_info.shape)
-        cout << shape << ',';
-    cout << endl;
+//    for (auto shape : drawing_info.shape)
+//        cout << shape << ',';
+//    cout << endl;
     //    cout << par.sizex << ',' << par.sizey << endl;
     //
     //    for (int i =0; i<10*10*3; i++)
