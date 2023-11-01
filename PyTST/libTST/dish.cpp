@@ -155,7 +155,7 @@ int Dish::CountCells(void) const {
     if (i->AliveP()) {
       amount++;
     } else {
-      cerr << "Dead cell\n";
+      cout << "Dead cell\n";
     }
   }
   return amount;

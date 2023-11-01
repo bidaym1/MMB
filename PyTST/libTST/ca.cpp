@@ -247,7 +247,7 @@ int CellularPotts::DeltaH(int x,int y, int xp, int yp, PDE *PDEfield)
   
   // lambda is determined by chemical 0
     
-  //cerr << "[" << lambda << "]";
+  //cout << "[" << lambda << "]";
   if ( sxyp == MEDIUM ) {
     DH += (int)(par.lambda *  (1. - 2. *   
 			       (double) ( (*cell)[sxy].Area() - (*cell)[sxy].TargetArea()) ));
@@ -325,7 +325,7 @@ void CellularPotts::ConvertSpin(int x,int y,int xp,int yp)
         
     if (!(*cell)[tmpcell].Area()) {
       (*cell)[tmpcell].Apoptose();
-      cerr << "Cell " << tmpcell << " apoptosed\n";
+      cout << "Cell " << tmpcell << " apoptosed\n";
     }
   }
   
@@ -612,9 +612,9 @@ void CellularPotts::ReadZygotePicture(void) {
   sscanf(ZYGXPM(ZYGOTE)[0],"%d %d %d %d",&checkx,&checky,&cells,&pix);
 
   if ((checkx>sizex)||(checky>sizey)) { 
-    std::cerr <<  "ReadZygote: The included xpm picture is smaller than the grid!\n";
-    std::cerr << "\n Please adjust either the grid size or the picture size.\n";
-    std::cerr << sizex << "," << sizey << "," << checkx << "," << checky << "\n";
+    std::cout <<  "ReadZygote: The included xpm picture is smaller than the grid!\n";
+    std::cout << "\n Please adjust either the grid size or the picture size.\n";
+    std::cout << sizex << "," << sizey << "," << checkx << "," << checky << "\n";
     exit(1);
   } 
   
@@ -674,7 +674,7 @@ void CellularPotts::ConstructInitCells (Dish &beast) {
     if (cells<sigma[0][i]) cells=sigma[0][i];
   }
 
-  cerr << "[ cells = " << cells << "]\n";
+  cout << "[ cells = " << cells << "]\n";
 
   // construct enough cells for the zygote.  "cells", contains the
   // number of colours (excluding background).
@@ -1051,7 +1051,7 @@ int CellularPotts::ThrowInCells(int n,int cellsize) {
       cellnum++;
     }
   }
-  cerr << "[ cellnum = " << cellnum << "]";
+  cout << "[ cellnum = " << cellnum << "]";
 
   // repair borders
   // fill borders with special border state
@@ -1215,7 +1215,7 @@ bool CellularPotts::ConnectivityPreservedP(int x, int y) {
       }
       if (!on_stack_p) {
 	if (stackp>6) {
-	  cerr << "Stack overflow, stackp=" << stackp << "\n";
+	  cout << "Stack overflow, stackp=" << stackp << "\n";
 	}
 	stack[++stackp]=s_nb;
       }
@@ -1262,7 +1262,7 @@ double CellularPotts::MeanCellArea(void) const {
     n++;    
   }
   
-  cerr << "Mean cell length is " << sum_length/((double)n) << endl;
+  cout << "Mean cell length is " << sum_length/((double)n) << endl;
   return (double)sum_area/(double)n;
 }
 
@@ -1372,7 +1372,7 @@ double CellularPotts::DrawConvexHull(Graphics *g, int color) {
   }
   hull_area/=2.;
 
-  //cerr << "Area = " << hull_area << "\n";
+  //cout << "Area = " << hull_area << "\n";
   
   delete[] p;
   delete[] hull;

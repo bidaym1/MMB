@@ -204,9 +204,9 @@ public:
     double iyy=(double)sum_yy-(double)sum_y*sum_y/(double)area;
     double ixy=(double)sum_xy-(double)sum_x*sum_y/(double)area;
 
-    cerr << "ixx = " << ixx << "\n";
-    cerr << "iyy = " << iyy << "\n";
-    cerr << "ixy = " << ixy << "\n";
+    cout << "ixx = " << ixx << "\n";
+    cout << "iyy = " << iyy << "\n";
+    cout << "ixy = " << ixy << "\n";
     
   }
 
@@ -420,7 +420,7 @@ private:
     // Must divide by mass!!!!!!
 
     // see: http://scienceworld.wolfram.com/physics/MomentofInertiaEllipse.html
-    //    cerr << "n = " << n << "\n";
+    //    cout << "n = " << n << "\n";
     return 4*sqrt(lambda_b/n);
 
     // 2*sqrt(lambda_b/n) give semimajor axis. We want the length.

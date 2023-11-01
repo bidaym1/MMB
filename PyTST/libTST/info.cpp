@@ -155,13 +155,13 @@ void Info::Menu() {
       tcell.SetTargetLength(10);
       tcell.SetTargetArea(50);
       
-      cerr << "tumorcell = " << tumorcell << endl;
-      cerr << "tcell.Sigma() = " << tcell.Sigma() << endl;
+      cout << "tumorcell = " << tumorcell << endl;
+      cout << "tcell.Sigma() = " << tcell.Sigma() << endl;
     }
     break;
   case 'N':
     {
-      cerr << "Getting neighbors\n";
+      cout << "Getting neighbors\n";
       int **neighbours=dish->CPM->SearchNeighbours();
       vector<Cell>::iterator i;
       for ( (i=dish->cell.begin(),i++); i!=dish->cell.end(); i++){

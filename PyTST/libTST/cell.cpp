@@ -147,7 +147,7 @@ void Cell::ConstructorBody(int settau) {
  ending with n elements */
 void Cell::ReadStaticJTable(const char *fname) {
 
-  cerr << "Reading J's...\n";
+  cout << "Reading J's...\n";
   ifstream jtab(fname);
     if (!jtab)  {
         perror(fname);
@@ -156,7 +156,7 @@ void Cell::ReadStaticJTable(const char *fname) {
   
   int n; // number of taus
   jtab >> n;
-  cerr << "Number of celltypes:" <<  n << endl; 
+  cout << "Number of celltypes:" <<  n << endl; 
   maxtau=n-1;
   
   // Allocate

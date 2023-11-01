@@ -26,7 +26,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
-#include <cerrno>
+#include <coutno>
 #include <iostream>
 #include "output.h"
 #include "parse.h"

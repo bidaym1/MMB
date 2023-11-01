@@ -79,9 +79,9 @@ double RANDOM(void)
 int Seed(int seed)
 {
   if (seed < 0) {
-	  std::cerr << "Randomizing random generator, seed is ";
+	  std::cout << "Randomizing random generator, seed is ";
     int rseed=Randomize();
-    std::cerr << rseed << "\n";
+    std::cout << rseed << "\n";
     return rseed;
   } else {
     int i;

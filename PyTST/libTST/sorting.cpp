@@ -66,8 +66,8 @@ INIT {
     CPM->SetRandomTypes();
     
   } catch(const char* error) {
-    cerr << "Caught exception\n";
-    std::cerr << error << "\n";
+    cout << "Caught exception\n";
+    std::cout << error << "\n";
     exit(1);
   }
 
@@ -84,7 +84,7 @@ TIMESTEP {
     
     dish->CPM->AmoebaeMove(dish->PDEfield);
     
-    //cerr << "Done\n";
+    //cout << "Done\n";
     if (par.graphics && !(i%par.storage_stride)) {
       
       
@@ -117,8 +117,8 @@ TIMESTEP {
 
     i++;
   } catch(const char* error) {
-    cerr << "Caught exception\n";
-    std::cerr << error << "\n";
+    cout << "Caught exception\n";
+    std::cout << error << "\n";
     exit(1);
   }
 }
@@ -163,11 +163,11 @@ int main(int argc, char *argv[]) {
 #endif
     
   } catch(const char* error) {
-    std::cerr << error << "\n";
+    std::cout << error << "\n";
     exit(1);
   }
   catch(...) {
-    std::cerr << "An unknown exception was caught\n";
+    std::cout << "An unknown exception was caught\n";
   }
   return 0;
 }
