@@ -81,15 +81,21 @@ class Interface:
     def runAndAnimate(self, runtime, draw_stride):
 
         fig, ax = plt.subplots() 
+        
+        im = ax.imshow(self._drawing)
 
         def init():
-            pass
+            im.set_array(self._drawing)
+            return [im]
+
         def update(frame):
             self.TimeStep(draw_stride)
-            self.draw(ax)
+            self.exporter.computeDrawing(self._drawing, 1)
+            im.set_array(self._drawing)
             print(f"Drawing frame %s" % (draw_stride*frame))
+            return [im]
 
         ani = FuncAnimation(fig, update, 
                             frames=np.array(range( runtime // draw_stride)),
-                            init_func=init,blit=False)     
+                            init_func=init,blit=True)     
         return ani
