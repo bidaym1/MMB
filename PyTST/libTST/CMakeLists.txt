@@ -6,13 +6,18 @@ project(module)
 
 add_definitions(-DPYBIND)
 
+
+
 find_package(PythonLibs)
+
+
+
    
 find_package(pybind11 REQUIRED)
 pybind11_add_module(module bindings.cpp
   ca.cpp
   cell.cpp
-  conrec.cpp
+  conrec_pytst.cpp
   crash.cpp
   dish.cpp
   hull.cpp
