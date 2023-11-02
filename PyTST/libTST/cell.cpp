@@ -117,9 +117,9 @@ void Cell::ConstructorBody(int settau) {
   // maxsigma keeps track of the last cell identity number given out to a cell
   sigma=maxsigma++;
   
-  if (!J) {
+  //if (!J) {
     ReadStaticJTable(par.Jtable);
-  }
+  //}
   
   tau=settau;
   area=0;
