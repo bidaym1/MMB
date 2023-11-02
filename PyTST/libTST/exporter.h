@@ -55,6 +55,8 @@ public:
     cbPDESigma getPDE(int layer);
     void computeDrawing(pybind11::array_t<int> drawing, int border_color);
     // pybind11::array_t<int> computeDrawing(pybind11::array_t<int> drawing, int border_color);
+    //
+    void SecreteAndDiffuse();
 };
 
 Exporter::Exporter(const std::string& filename)
@@ -114,18 +116,6 @@ void Exporter::computeDrawing(pybind11::array_t<int> drawing, int border_color)
     pybind11::buffer_info drawing_info = drawing.request();
     int* drawing_ptr = static_cast<int*>(drawing_info.ptr);
 
-    //    cout << "shape = ";
-//    for (auto shape : drawing_info.shape)
-//        cout << shape << ',';
-//    cout << endl;
-    //    cout << par.sizex << ',' << par.sizey << endl;
-    //
-    //    for (int i =0; i<10*10*3; i++)
-    //        cout << i << ',' << drawing_ptr[i] << endl;
-    //
-
-    // for (int i = 0; i < drawing_info.shape[0]; i++) {
-    //     for (int j = 0; j < drawing_info.shape[1]; j++) {
     for (int i = 1; i < par.sizex - 1; i++) {
         for (int j = 1; j < par.sizey - 1; j++) {
 
@@ -139,14 +129,6 @@ void Exporter::computeDrawing(pybind11::array_t<int> drawing, int border_color)
             int R_border = colortable[border_color][0];
             int G_border = colortable[border_color][1];
             int B_border = colortable[border_color][2];
-
-            //            int R_index = i * drawing_info.shape[2]*drawing_info.shape[1] + j * drawing_info.shape[2] ;
-            //            int G_index = R_index + 1;
-            //            int B_index = R_index + 2;
-            //
-            //            drawing_ptr[R_index] = R;
-            //            drawing_ptr[G_index] = G;
-            //            drawing_ptr[B_index] = B;
 
             setValue(2 * i, 2 * j, 0, R, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
             setValue(2 * i, 2 * j, 1, G, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
@@ -181,11 +163,32 @@ void Exporter::computeDrawing(pybind11::array_t<int> drawing, int border_color)
                 setValue(2 * i + 1, 2 * j + 1, 1, G_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
                 setValue(2 * i + 1, 2 * j + 1, 2, B_border, drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
             }
-            //            if (spin > 0){
-            //            cout << i << ' ' << j << " R: " << drawing_ptr[R_index] << ',' << spin << ',' << type << ':' << R << endl;
-            //            cout << i << ' ' << j << " G: " << drawing_ptr[G_index] << ',' << spin << ',' << type << ':'<< G << endl;
-            //            cout << i << ' ' << j << " B: " << drawing_ptr[B_index] << ',' << spin << ',' << type << ':'<< B << endl;
-            //            }
         }
     }
 }
+
+void Exporter::SecreteAndDiffuse() {
+	dish->PDEfield->Secrete(dish->CPM);
+	dish->PDEfield->Diffuse(1);
+}
+
+
+void PDE::Secrete(CellularPotts *cpm) {
+
+  const double dt=par.dt;
+
+  for (int x=0;x<sizex;x++)
+    for (int y=0;y<sizey;y++) {
+      // inside cells
+      if (cpm->Sigma(x,y)) {
+	
+	sigma[0][x][y]+=par.secr_rate[0]*dt;
+	
+      } else {
+      // outside cells
+	sigma[0][x][y]-=par.decay_rate[0]*dt*sigma[0][x][y];
+ 
+      }
+    }
+}
+
