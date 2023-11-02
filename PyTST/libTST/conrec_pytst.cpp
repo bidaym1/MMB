@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
-#include "graph.h"
 #include "conrec.h"
+#include <pybind11/numpy.h>
 
 
 #define xsect(p1,p2) (h[p2]*xh[p1]-h[p1]*xh[p2])/(h[p2]-h[p1])
@@ -9,6 +9,9 @@
 #define min(x,y) (x<y?x:y)
 #define max(x,y) (x>y?x:y)
 
+const int colors[256][3] = {
+#include "default.txt"
+};
 /*
 Copyright (c) 1996-1997 Nicholas Yue
 
@@ -54,6 +57,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 //     starts from zero (0)
 //
 //=============================================================================
+
+void setvalue(int i, int j, int k, int value, int* data, int shape1, int shape2)
+{
+    // used in computeDrawing
+    int index = i * shape2 * shape1 + shape2 * j + k;
+    data[index] = value;
+}
+
 int conrec(double **d,
 	   int ilb,
 	   int iub,
@@ -63,7 +74,7 @@ int conrec(double **d,
 	   double *y,
 	   int nc,
 	   double *z,
-	   Graphics *g,
+	   pybind11::array_t<int> drawing,
 	   int colour)
 // d               ! matrix of data to contour
 // ilb,iub,jlb,jub ! index bounds of data matrix
@@ -72,6 +83,10 @@ int conrec(double **d,
 // nc              ! number of contour levels
 // z               ! contour levels in increasing order
 {
+
+    pybind11::buffer_info drawing_info = drawing.request();
+    auto drawing_ptr = static_cast<int*>(drawing_info.ptr);
+
   int m1,m2,m3,case_value;
   double dmin,dmax,x1=0,x2=0,y1=0,y2=0;
   register int i,j,k,m;
@@ -264,8 +279,14 @@ int conrec(double **d,
 		//=============================================================
 		//printf("%f %f %f %f %f\n",x1,y1,x2,y2,z[k]);
 		//g->Line((int)(2*x1),(int)(2*y1),(int)(2*x2),(int)(2*y2),1);
-		g->Point(colour,(int)(2*x1),(int)(2*y1));
-		g->Point(colour,(int)(2*x2),(int)(2*y2));
+        //
+
+            setvalue(2 * x1, 2 * y1, 0, colors[colour][0], drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            setvalue(2 * x1, 2 * y1, 1, colors[colour][0], drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            setvalue(2 * x1, 2 * y1, 2, colors[colour][2], drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            setvalue(2 * x2, 2 * y2, 0, colors[colour][0], drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            setvalue(2 * x2, 2 * y2, 1, colors[colour][0], drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
+            setvalue(2 * x2, 2 * y2, 2, colors[colour][2], drawing_ptr, drawing_info.shape[1], drawing_info.shape[2]);
 	      }
 	    }
 	  }

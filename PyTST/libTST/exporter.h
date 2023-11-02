@@ -3,6 +3,7 @@
 #include <array>
 #include <iostream>
 #include <pybind11/numpy.h>
+#include "conrec.h"
 
 const int colortable[256][3] = {
 #include "default.txt"
@@ -39,6 +40,7 @@ public:
     int getSigmaAt(const int, const int);
     cbSigma getSigma();
     void setCallback(Callback*);
+    void PlotPDE(pybind11::array_t<int> drawing, int l, int color) ;
     int getNumOfCells() { return dish->CountCells(); }
     int getColorOfCell(int cell)
     {
@@ -120,7 +122,10 @@ void Exporter::computeDrawing(pybind11::array_t<int> drawing, int border_color)
         for (int j = 1; j < par.sizey - 1; j++) {
 
             int spin = getSigmaAt(i, j);
-            int type = dish->CPM->getCell(spin).getTau() + 1;
+            int type = dish->CPM->getCell(spin).getTau();
+
+            if (spin >0)
+                type++;
 
             int R = colortable[type][0];
             int G = colortable[type][1];
@@ -192,3 +197,29 @@ void PDE::Secrete(CellularPotts *cpm) {
     }
 }
 
+
+void Exporter::PlotPDE(pybind11::array_t<int> drawing, int l, int color) {
+    int nc = 10;
+    double **sigma = dish->PDEfield->SigmaPointer(l) ;
+  double *z=(double *)malloc(nc*sizeof(double));
+  double max = dish->PDEfield->Max(l);
+  double min = dish->PDEfield->Min(l);
+  double step=(max-min)/nc;
+  {for (int i=0;i<nc;i++)
+    z[i]=(i+1)*step;}
+  
+  double *x=(double *)malloc(par.sizex*sizeof(double));
+  {for (int i=0;i<par.sizex;i++)
+    x[i]=i;}
+  
+  double *y=(double *)malloc(par.sizey*sizeof(double));
+  {for (int i=0;i<par.sizey;i++)
+    y[i]=i;}
+
+    conrec(sigma,0, par.sizex-1,0,par.sizey-1,x,y,nc,z,drawing,color);
+
+  
+  free(x);
+  free(y);
+  free(z);
+}

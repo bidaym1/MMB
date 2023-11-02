@@ -62,6 +62,7 @@ PYBIND11_MODULE(module, m) {
         .def("copy_prob", &Exporter::copy_prob)
         .def("getPDE", &Exporter::getPDE)
         .def("SecreteAndDiffusePDE", &Exporter::SecreteAndDiffuse)
+        .def("PlotPDE", &Exporter::PlotPDE)
         .def("computeDrawing", &Exporter::computeDrawing)
         ;
 	py::class_<Callback>(m, "Callback")

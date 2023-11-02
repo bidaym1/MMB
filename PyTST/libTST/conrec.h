@@ -1,3 +1,4 @@
+#include <pybind11/numpy.h>
 /* 
 
 Copyright 1996-2006 Roeland Merks
@@ -84,7 +85,7 @@ int conrec(double **d,
 	   double *y,
 	   int nc,
 	   double *z,
-	   Graphics *g,
+	   pybind11::array_t<int> drawing,
 	   int colour=1);
 // d               ! matrix of data to contour
 // ilb,iub,jlb,jub ! index bounds of data matrix

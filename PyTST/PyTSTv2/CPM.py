@@ -34,7 +34,7 @@ class Callback_PyTST:
 
 
 class Interface:
-    def __init__(self, parfile, cb=None):
+    def __init__(self, parfile, cb=None, callPDE=False):
         # Initalize TST exporter
         self.exporter = module.Exporter(parfile)
         if cb is None:
@@ -58,10 +58,13 @@ class Interface:
             raise RuntimeError("Did not find sizes in the parameterfile!")
 
         self._drawing = np.zeros((2*sizex,2*sizey, 3)).astype(np.intc)
+        self._callPDE = callPDE
 
     def TimeStep(self, count=1):
         for _ in range(count):
             self.exporter.timestep()
+            if self._callPDE:
+                self.exporter.SecreteAndDiffusePDE()
 
     def celltype(self, sigma):
         return self.exporter.getColorOfCell(sigma)
@@ -75,10 +78,15 @@ class Interface:
 
     def draw(self, ax):
         self.exporter.computeDrawing(self._drawing,1)
+        
+        ax.imshow(self._drawing)
+
+    def drawPDE(self, ax, layer=0, color=7):
+        self.exporter.PlotPDE(self._drawing, layer, color)
         ax.imshow(self._drawing)
 
 
-    def runAndAnimate(self, runtime, draw_stride):
+    def runAndAnimate(self, runtime, draw_stride, layer=0, color=7):
 
         fig, ax = plt.subplots() 
         
@@ -91,6 +99,8 @@ class Interface:
         def update(frame):
             self.TimeStep(draw_stride)
             self.exporter.computeDrawing(self._drawing, 1)
+            if self._callPDE:
+                self.exporter.PlotPDE(self._drawing, layer, color)
             im.set_array(self._drawing)
             print(f"Drawing frame %s" % (draw_stride*frame))
             return [im]
