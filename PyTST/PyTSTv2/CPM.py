@@ -2,6 +2,7 @@ import module
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from tqdm import tqdm
 
 
 class Callback_PyTST:
@@ -102,10 +103,10 @@ class Interface:
             if self._callPDE:
                 self.exporter.PlotPDE(self._drawing, layer, color)
             im.set_array(self._drawing)
-            print(f"Drawing frame %s" % (draw_stride*frame))
+            #print(f"Drawing frame %s" % (draw_stride*frame))
             return [im]
 
         ani = FuncAnimation(fig, update, 
-                            frames=np.array(range( runtime // draw_stride)),
+                            frames=tqdm(np.array(range( runtime // draw_stride)), position=0, leave=True, unit_scale=draw_stride),
                             init_func=init,blit=True)     
         return ani
