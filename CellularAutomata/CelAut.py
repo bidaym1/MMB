@@ -42,10 +42,13 @@ for x in range(neighbourhood.shape[0]):
             continue #dont consider center of neighbourhood
         if neighbourhood[x][y] == 1:
             one_count += 1
+            return self.evolve_rule(neighbourhood[1][1], np.sum(neighbourhood), c[0], c[1], self.field)
         elif neighborhood[x][y] == 2:
             two_count += 1
+            return self.evolve_rule(neighbourhood[1][1], np.sum(neighbourhood)-1, c[0], c[1], self.field)
         elif neighborhood[x][y] == 3:
             three_count += 1
+            return self.evolve_rule(neighbourhood[1][1], np.sum(neighbourhood)-1, c[0], c[1], self.field)
 
     
     def evolve_rule(self, state, alive_count, x, y, field):
