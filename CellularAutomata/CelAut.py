@@ -29,11 +29,25 @@ class CAsimulator:
             return False
 
     def custom_rule(self, neighbourhood, c, t):
-        if neighbourhood[1][1] == 0:
-            return self.evolve_rule(neighbourhood[1][1], np.sum(neighbourhood), c[0], c[1], self.field)
-        else:
-            return self.evolve_rule(neighbourhood[1][1], np.sum(neighbourhood)-1, c[0], c[1], self.field)
+       # if neighbourhood[1][1] == 0:
+      #      return self.evolve_rule(neighbourhood[1][1], np.sum(neighbourhood), c[0], c[1], self.field)
+     #   else:
+     #       return self.evolve_rule(neighbourhood[1][1], np.sum(neighbourhood)-1, c[0], c[1], self.field)
+one_count = 0
+two_count = 0
+three_count = 0
+for x in range(neighbourhood.shape[0]):
+    for y in range(neighbourhood.shape[1]):
+        if x == 1 and y == 1:
+            continue #dont consider center of neighbourhood
+        if neighbourhood[x][y] == 1:
+            one_count += 1
+        elif neighborhood[x][y] == 2:
+            two_count += 1
+        elif neighborhood[x][y] == 3:
+            three_count += 1
 
+    
     def evolve_rule(self, state, alive_count, x, y, field):
         raise NotImplementedError
 
